@@ -99,52 +99,53 @@ MerkleTree はリストオブジェクトとその部分列のハッシュ値を
 　*ClientCache* は他ピアとの接続情報を一時的に保存する *CacheMap* である。 *ClientCache* は *Set*, *Get* メソッドが実装されている。*Set* メソッドは *Peer* と接続情報を指定して *ClientCache* に保存する。*Get* メソッドは指定した *Peer* の接続情報を取得する。
 ### Repository
 　*Repository* は Proskenion で管理しているデータ全体を総括して管理するインターフェースである。*Repository* は *Top*, *Me*, *GetDelegatedAcounts*, *Commit*, *GenesisCommit*, *CreateBlock* メソッドが実装されている。*Top* メソッドは最新且つ最も信頼度の高いブロックチェーンの先頭のブロックを取得する。*Me* メソッドは自身のピア情報を取得する。*GetDelegateAccounts* はブロックの提案者として適当なアカウントのリストを取得する。*Commit* は *Block* と *TxList* を指定して *BlockChain* に実際にコミットする。*GenesisCommit* は *TxList* を指定して全ての*Transaction* を強制的に実行して高さ 0 の *Block* をコミットする。*CreateBlock* は指定した *ProposalTxQueue*, 現在の *Round*, 現在の時刻から提案されたブロックを実行して取得する。先頭の *Block* が持っているハッシュ値から *WSV*, *TxHistory*, *BlockChain* の状態を復元してそれぞれ操作することができる。状態の復元は *MerklePatriciaTree* のルートノードのハッシュ値を参照するだけなので *O(1)* で実行できる。
-//TODO
-# Proskenion Domain *Specific*Language
 
-Proskenion *Domain*Specific Language(以下、ProSL) は Proskenion 上で実行できる *DSL*である。*ProSL* は無限ループを避けるためにチューリング完全でない命令セットを用いている。*ProSL* は Protocol-Buffers で定義されており、内部でのDSLの検証、実行もシリアライズされた Protocol-Buffers のデータを用いる。*ver*1.0a では *YAML*によって書かれた *ProSL*を Protocol-Buffers に変換する *Convertor*が実装されている。Proskenion  上では Protocol-Buffers を用いるため、Convertor さえ実装すれば *YAML*以外でも *ProSL*を記述可能になる。
+# Proskenion Domain Specific Language
+
+Proskenion Domain Specific Language(以下、ProSL) は Proskenion 上で実行できる DSL である。ProSL は無限ループを避けるためにチューリング完全でない命令セットを用いている。ProSL は Protocol-Buffers で定義されており、内部での DSL の検証、実行もシリアライズされた Protocol-Buffers のデータを用いる。ver 1.0a では YAML[5] によって書かれた ProSL を Protocol-Buffers に変換するコードが実装されている。Proskenion 上では Protocol-Buffers を用いて制御するため、 Procol-Buffers への変換コードさえ実装すれば YAML 以外でも ProSL を記述可能になる。
 
 ## Design
 
-ProSL は Proskenion 上で保存する時の *Storage*の設計は以下のようになっている。
+ProSL は Proskenion 上で保存する時の *Storage* の設計は以下のようになっている。
 
     {
       "prosl_type": "consensus" *or*"incecntive" *or*"update",
       "prosl": 0x....(byte *data*that *is*marshal *of*prosl)
     }
 
-Proskenion を動かすには *Consensus**algorithm*, *Incentive**algorithm*, *Update*algorithm そして *Genesis*Block の4種類の設計をしなければならない。これらのそれぞれ異なるタイミングで動作する *ProSL*である。 
-### *Consensus*Algorithm Design
-Blockの生成者を選出する仕組みを設計する。これはBlockをCommitまたはCreateする直前に実行される。これは *Account*のリストを返す。このリストの先頭から現在のRound番目のアカウントが信頼しているPeerが正しいブロックの生成者である。
-### *Incentive*Algorithm Design
-インセンティブ付与の仕組みを設計する。これはBlockをCommitする過程で実行される。これは *Transaction*を返す。この *Transaction*は *ProSL*が実行された直後に強制的に実行され変更が *BlockChain*に刻まれる。
-### *Update*Algorithm Design
-*Consensus*, *Incentive*, *Update*algorithm を変更するための条件を設計する。これは `CheckAndCommitProsl` という特殊なコマンドが実行された時に実行する。これは真偽値を返す。*True* が返った場合は提案された新たなアルゴリズムが適用される。
-### *Genesis*Block Design
-高さ0のBlockに刻まれるTransactionを設計する。これは Proskenion の初回起動時に一度だけ実行される。これは *Transaction*を返す。この *Transaction*は初回のブロックにて強制的に実行され変更が *BlockChain*に刻まれる。
+Proskenion を動かすには Consensus algorithm, Incentive algorithm, Update algorithm そして Genesis Block の4種類の設計をしなければならない。これらのそれぞれ異なるタイミングで動作する。 
+### Consensus Algorithm Design
+ブロックの生成者を選出する仕組みを設計する。これは *Block* をコミットまたは作成する直前に実行される。コミットの前に実行される際はブロックの生成者が適切かどうかの検証に用いる。作成の前に実行される際は自分がブロックの作成者として適切かを判定するために用いる。これは *Account*のリストを返す。このリストの先頭から現在の *Round* 番目のアカウントが信頼している *Peer* が正しいブロックの生成者である。
+### Incentive Algorithm Design
+インセンティブ付与の仕組みを設計する。これは *Block* をコミットする過程で実行される。これは *Transaction* を返す。この *Transaction* は ProSL が実行された直後に強制的に実行され変更が *BlockChain* に刻まれる。
+### Update Algorithm Design
+Consensus, Incentive, Update algorithm を変更するための条件を設計する。これは `CheckAndCommitProsl` という特殊なコマンドが実行された時に実行する。これは真偽値を返す。*True* が返った場合は提案された新たなアルゴリズムが適用される。
+### Genesis Block Design
+高さ0の *Block* で実行する命令群を設計する。これは Proskenion の初回起動時に一度だけ実行される。これは *Transaction* を返す。この *Transaction* は初回のブロックにて強制的に実行され変更が *BlockChain* に刻まれる。
 
-## *ProSL*Operators
+// TODO
+## ProSL Operators
 
-ProSL の *BNF*は以下の通りである。この *BNF*では `<variableName: operatorTypeName>` の形式で記述する。`[op]`は *Operator*`op` のリストを示す。`{STRING:op}` は *key*が *STRING*である *Operator*`op` の辞書型を示す。`<var:op>?` は *Operator*`op` が *optional*であることを示す。
+ProSL の BNF は以下の通りである。この BNF では `<variableName: operatorTypeName>` の形式で記述する。`[op]` は Operator `op` のリストを示す。`{STRING:op}` は *key* が *STRING* である *Operator* `op` の辞書型を示す。`<var:op>?` は *Operator* `op` が *optional* であることを示す。
 
-    *Prosl*::= <ops:[ProslOperator]>
+    Prosl := <ops:[ProslOperator]>
     
-    *ProslOperator*::= <set:SetOperator> |
+    ProslOperator := <set:SetOperator> |
                       <if:IfOperator> |
                       <elif:ElifOperator> |
                       <else:ElseOperator> |
                       <err:ErrOperator> |
                       <require:RequireOperator> |
                       <return:ReturnOperator>
-    *SetOperator*::= <var:STRING> <value:ValueOperator>
-    *IfOperator*::= <cond:ConditionalFormula> <do:Prosl>
-    *ElifOperator*::= <cond:ConditionalFormula> <do:Prosl>
-    *ElseOperator*::= <do:Prosl>
-    *ErrCatchOperator*::= <code:ERRCODE> <do:prosl>
-    *RequireOperator*::= <cond:ConditionalFormula>
-    *ReturnOperator*::= <return:ReturnOperator>
+    SetOperator := <var:STRING> <value:ValueOperator>
+    IfOperator := <cond:ConditionalFormula> <do:Prosl>
+    ElifOperator := <cond:ConditionalFormula> <do:Prosl>
+    ElseOperator := <do:Prosl>
+    ErrCatchOperator := <code:ERRCODE> <do:prosl>
+    RequireOperator := <cond:ConditionalFormula>
+    ReturnOperator := <return:ReturnOperator>
     
-    *ValueOperator*::= <query:QueryOperator> |
+    ValueOperator := <query:QueryOperator> |
                       <tx:TxOperator> |
                       <cmd:CommandOperator> |
                       <storage:StorageOperator> |
@@ -229,37 +230,36 @@ ProSL の *BNF*は以下の通りである。この *BNF*では `<variableName: 
     <STRING> ::= String
     <OBJECT> ::= Object
     <INT32> ::= int32
-    <OBJECTCODE> ::= *any*| *bool*| int32 | int64 | uint32 | uint64 | *string*|
-                    *bytes*| *address*| *signature*| *account*| *peer*| *list*| *dict*|
-                    *storage*| *command*| *transaction*| block
-    <ORDERCODE> ::= *DESC*| ASC
-
-//TODO
+    <OBJECTCODE> ::= any | bool | int32 | int64 | uint32 | uint64 | string |
+                    bytes | address | signature | account | peer | list | dict |
+                    storage | command | transaction | block
+    <ORDERCODE> ::= DESC | ASC
 
 
-# *System*Core Mechanism
 
-Proskenion はパブリックブロックチェーンプラットフォームである。*Ethereum* でも用いられている *Merkle*Patricia *Tree*上にトランザクションデータと状態を保存する分散型台帳基盤である。トランザクションは Proskenion の状態を変化させるコマンド列を持つ。クライアントはトランザクションに署名をつけて Proskenion ピアへと送信する。Proskenion  は受け取ったトランザクションを他のピアへ伝搬して各自トランザクションを保存する。また、合意形成過程でブロックの生成者がトランザクションの列としてブロックを生成し他のピアへ伝搬する。ブロックを受け取ったピアはブロックをCommitして良いかの検証を行い妥当なブロックチェーンの先頭に繋げる。本章ではこれら一連の動作を行う Proskenion で実装されている主な機構であるゲート、合意形成、同期、について説明する。
+# System Core Mechanism
+
+Proskenion はパブリックブロックチェーンプラットフォームである。Ethereum でも用いられている MerklePatriciaTree 上にトランザクションデータと状態を保存する分散型台帳基盤である。トランザクションは Proskenion の状態を変化させるコマンド列を持つ。クライアントはトランザクションに署名をつけて Proskenion ピアへと送信する。Proskenion  は受け取ったトランザクションを他のピアへ伝搬して各自トランザクションを保存する。また、合意形成過程でブロックの生成者がトランザクションの列としてブロックを生成し他のピアへ伝搬する。ブロックを受け取ったピアはブロックをCommitして良いかの検証を行い妥当なブロックチェーンの先頭に繋げる。本章ではこれら一連の動作を行う Proskenion で実装されている主な機構であるゲート、合意形成、同期、について説明する。
 
 ## Gate
 
-Gate はクライアント又は他のピアから送られてくるメッセージを受け取って処理する機構である。*Gate* には *API**Gate*, *Consensus**Gate*, *Sync*Gate がある。*API* *Gate*では *Transaction*を受け取る *Write**RPC*, *Query*を受け取る *Read*RPC が実装されている。*API* *Gate*で受け取った *Transaction*は静的検証後 *ProposalTxQueue*に挿入された後、他のピアに伝搬を行う。*API* *Gate*で受け取った *Query*は検証後、Query のルールに従ってデータを取得しピアの署名をつけて *Query*の送り主に返す。*Sync* *Gate*では同期願いを受けたさいに自分の持っているメインの *BlockChain*の情報を全て送り主に送信する。*Sync* は相互 *Streaming*通信で行われる。
+Gate はクライアント又は他のピアから送られてくるメッセージを受け取って処理する機構である。 Gate には APIGate, ConsensusGate, SyncGate がある。APIGate では *Transaction* を受け取る WriteRPC, Query を受け取る ReadRPC が実装されている。APIGate で受け取った *Transaction* は静的検証後 *ProposalTxQueue* に挿入された後、他のピアに伝搬を行う。APIGate で受け取った *Query* は検証後、*Query* のルールに従ってデータを取得しピアの署名をつけて *Query* の送り主に返す。*SyncGate* では同期願いを受けたさいに自分の持っている主体の *BlockChain* の情報を全て送り主に送信する。同期処理は相互 Streaming 通信で行われる。
 
 ## Consensus
 
-Consensus は合意形成を行う機構である。*Consensus* では3つの処理が並列して無限ループしている。1つ目は *Block*を生成して他のPeerに伝搬する処理である。このループでは *Block*が *Commit*されない限り一定時間おきに *Round*をインクリメントされて現在のRoundにおける *Block*生成者が自分であった場合に *Block*を生成、伝搬する。2つ目は伝搬された *Block*を *Commit*する処理である。このループでは *ProposalBlockQueue*に *Block*が入ったイベントを受け取り *Block*とTxList を復元し検証の結果妥当であればその *Block*を *Commit*する。3つ目は自ピア が *Active*でない場合にデータの同期を行う処理である。このループでは自ピア が全体と同期がとれているのかをチェックし取れていない場合は *Synchronizer*に同期リクエストを投げる。
+Consensus は合意形成を行う機構である。*Consensus* では3つの処理が並列して無限ループしている。1つ目は *Block* を生成して他の *Peer* に伝搬する処理である。このループでは *Block* がコミットされない限り一定時間おきに *Round* をインクリメントされて現在の *Round* における *Block* 生成者が自分であった場合に *Block* を生成、伝搬する。2つ目は伝搬された *Block* をコミットする処理である。このループでは *ProposalBlockQueue* に *Block* が入ったイベントを受け取り *Block* と *TxList* を復元し検証の結果妥当であればその *Block* をコミットする。3つ目は自ピアが *Active* でない場合にデータの同期を行う処理である。このループでは自ピアが全体と同期がとれているのかをチェックし取れていない場合は *Synchronizer* に同期リクエストを投げる。
 
 ## Synchronizer
 
-Synchronzier はデータ同期を行う機構である。*Synchronizer* では *Peer*を指定してその *Peer*からメインの *BlockChain*のデータを取得して同期を行う。この同期処理は *Streaming*RPC を用いて行う。同期願いを出された側は *Block*と *TxList*を同期依頼主に送り続ける。終了条件は元のチェーンを持っている側が全てのブロックを送信しきるか、同期依頼を出した側が合意形成の過程で伝搬されたBlockで先頭ブロックが更新されるか、エラーが発生するかのいずれかである。
+Synchronzier はデータ同期を行う機構である。Synchronizer では *Peer* を指定してその *Peer* からメインの *BlockChain* のデータを取得して同期を行う。この同期処理は StreamingRPC を用いて行う。同期願いを出された側は *Block* と *TxList* を同期依頼主に送り続ける。終了条件は元のチェーンを持っている側が全てのブロックを送信しきるか、同期依頼を出した側が合意形成の過程で伝搬された *Block* で先頭ブロックが更新されるか、エラーが発生するかのいずれかである。
 
 # API
 
-各コマンドの作用などは *Documents*を参照[https://github.com/proskenion.github.io]。
+各コマンドの作用などは *Documents* を参照[https://github.com/proskenion.github.io]。
 
 ## Write
 
-Transaction *in*Commands の *API*Documents. *Transaction*の設計は以下のようになっている。
+*Transaction* の設計は以下のようになっている。
 
     *message*Transaction {
         *message*Payload {
@@ -294,11 +294,11 @@ Transaction *in*Commands の *API*Documents. *Transaction*の設計は以下の�
        }
     }
 
-Transaction の *Verify*では署名とPayload の中身が一致しているかをチェックする。*Transaction* の *Validate*ではコマンド列の中にある *authorizerId*を操作するために必要な署名が揃っているかをチェックする。*Transaction* のコマンド列はACID性を備えている。
+*Transaction* の静的検証では署名と *Payload* の中身が一致しているかをチェックする。*Transaction* の動的検証ではコマンド列の中にある *AuthorizerId* を操作するために必要な署名が揃っているかをチェックする。*Transaction* のコマンド列はACID性を備えている。
 
 ## Read
 
-Query の設計は以下のようになっている。
+*Query* の設計は以下のようになっている。
 
     *message*Query {
         *message*Payload {
@@ -320,37 +320,37 @@ Query の設計は以下のようになっている。
         *Signature*signature = 2;
     }
 
-AuthorizerId は誰の権限で *Query*を発行するかを *AccountId*で指定、FromId は検索対象となる *Address*を指定、Select は取得する *Object*の型を指定する。*FromId* で指定した検索対象が範囲検索（WalletIdではない）の場合に追加で検索クエリを設定できる。*Where* は取得した *Object*のリストにフィルターをかける条件式を指定、OrderBy は取得したリストをソートするルールを指定、Limit は取得したリストの何番目までを返すかを指定する。*Signature* には *Payload*を *Authorizer*が署名したものを指定する。検索結果は *QueryResponse*として返ってくる。*Object* は *Query*を実行した結果返ってきたオブジェクト、Signature は *Query*を実行した *Peer*が *Object*を署名したものが入っている。
+*AuthorizerId* は誰の権限で *Query* を発行するかを *AccountId* で指定、*FromId* は検索対象となる *Address* を指定、*Select* は取得する *Object* の型を指定する。*FromId* で指定した検索対象が範囲検索（ *WalletId* ではない）の場合に追加で検索クエリを設定できる。*Where* は取得した *Object* のリストにフィルターをかける条件式を指定、*OrderBy* は取得したリストをソートするルールを指定、*Limit* は取得したリストの何番目までを返すかを指定する。*Signature* には *Payload* を *Authorizer* が署名したものを指定する。検索結果は *QueryResponse* として返ってくる。*Object* は *Query* を実行した結果返ってきたオブジェクト、*Signature* は *Query* を実行した *Peer* が *Object* を署名したものが入っている。
 
 # Disscussion
 
-Proskenion の *Usecase*について考える。
+Proskenion の Usecase について考える。
 
-## *Proof*of Creator
+## Proof of Creator
 
-　クリエータを主体とする新たな合意形成アルゴリズム “Proof *of*Creator” を提案する。仮にクリエータ同士の関係をフォロー/フォロワーを示す有効グラフで表現する。この有向グラフから *PageRank*を計算して出した “クリエータのrank” をクリエータの信頼度とする。信頼度の上位4人によって指定されたシステム運営者達がブロックの生成を順繰りに行う。これにより、より良いクリエータがサーバを選出するクリエータが主体であるような運営システムを構築することができる。[Figure1]
+　クリエータを主体とする新たな合意形成アルゴリズム “Proof of Creator” を提案する。仮にクリエータ同士の関係をフォロー/フォロワーを示す有効グラフで表現する。この有向グラフから PageRank を計算して出した “クリエータのrank” をクリエータの信頼度とする。信頼度の上位4人によって指定されたシステム運営者達がブロックの生成を順繰りに行う。これにより、より良いクリエータがサーバを選出するクリエータが主体であるような運営システムを構築することができる。[Figure1]
 
-![Figure1. *Proof*of *Creator*Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634997921_+2019-03-04+02.42.48.png)
+![Figure1. Proof of Creator Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634997921_+2019-03-04+02.42.48.png)
 
-## *Selection*of Ms.Contest
+## Selection of Ms.Contest
 
 システムのテスト運用という意味でミスコンのような短期的な人気投票システムを行うのも面白い。ミスコンのエントリー者をクリエータと定義して彼らのインセンティブ設計が直接評価方法となり実証実験的なコンテストが開催可能であると思われる。[Figure2]
 
 ![Figure2. Ms.Contest Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998114_+2019-03-04+02.43.09.png)
 
-## *Online*Comic *Market*Platform
+## Online Comic Market Platform
 
 　オンライン上でコミックマーケットのような仕組みを模擬する。Proskenion  を用いることで自治コミュニティが運営する同人即売サービスが実現できる。クリエータを同人作家と定義して作品の販売をマイニングと位置づける。評価は他のクリエータからの信頼度と販売利益と定義する。[Figure3]
 
-![Figure3. *Online*comic *market*platform Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998118_+2019-03-04+02.42.58.png)
+![Figure3. Online comic market platform Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998118_+2019-03-04+02.42.58.png)
 
 # Conclusion
 
 　Proskenion はプリミティブな命令セットの組み合わせで高い表現力を持つパブリックブロックチェーンを実現した。また、合意形成とインセンティブの設計をハードフォーク無しに変更できる仕組みを導入/実現した。さらに、応用先としてあらゆるディジタルクリエータを対象に新たな収益源となりうる分散運営システムの例を提案した。
 
-# *Feature*works
+# Feature works
 
-　Feature *works*としては実証実験での利用として Proskenion の特性を活かして実証実験で利用する形を模索している。具体的にはインセンティブと合意形成アルゴリズムを簡単に設計できるため、”どういった報酬設計” が “どのような結果をもたらすか” の実験を中~小規模で行うのに向いている。また、 Proskenion が実運用されるための世界の基盤を創るための新たなブロックチェーン開発も進めたい。最近注目されている *BlockChain*開発ツールキットとして “Substrate” というものがある。これは複数のブロックチェーンを繋げるProjectの一環として作られたものであり、Plkadot の *Project*の一つである。これを用いてスケーラビリティと相互交換性を担保する新たなブロックチェーンの開発を行う。
+　Feature works としては実証実験での利用として Proskenion の特性を活かして実証実験で利用する形を模索している。具体的にはインセンティブと合意形成アルゴリズムを簡単に設計できるため、”どういった報酬設計” が “どのような結果をもたらすか” の実験を中~小規模で行うのに向いている。また、 Proskenion が実運用されるための世界の基盤を創るための新たなブロックチェーン開発も進めたい。最近注目されているブロックチェーン開発ツールキットとして “Substrate[6]” というものがある。これは複数のブロックチェーンを繋げる Project の一環として作られたものであり、Polkadot[7] の Project の一つである。これを用いてスケーラビリティと相互交換性を担保する新たなブロックチェーンの開発を行う。
 
 # Acknowledgement
 ## References
@@ -358,5 +358,7 @@ Proskenion の *Usecase*について考える。
 2. Ethereum [https://ethereum.github.io/yellowpaper/paper.pdf]
 3. Protocol-Buffers [https://developers.google.com/protocol-buffers/]
 4. MerklePatriciaTree [https://github.com/ethereum/wiki/wiki/Patricia-Tree]
-2. 
+5. YAML [https://yaml.org/spec/history/2001-05-26.html]
+6. Substrate [https://www.parity.io/what-is-substrate/]
+7. Polkadot [https://polkadot.network/]
 
