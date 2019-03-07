@@ -18,4 +18,4 @@ Proskenion's incentive/consensus algorithm is designed by Prosl.
 
 [Twitter](https://twitter.com/public_sate)
 [GitHub](https://github.com/proskenion/proskenion)
-[Documentation](https://github.com/proskenion/proskenion.github.io/docs)
+[Documentation](https://proskenion.github.io/docs)
