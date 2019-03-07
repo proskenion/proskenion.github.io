@@ -70,33 +70,46 @@ It is a BlockChain platform that bases between the content provider and the spec
 # System DataStructure Mechanism
 ## DataStructure
 　*DataStructure* は Proskenion 上で実装されている。プリミティブなデータ構造である。
+
 ### CacheMap
 　*CacheMap* は排他制御付きキャッシングデータ構造である。*CacheMap* は *Set*, *Get* メソッドを持つ。*Set* メソッドはハッシュ関数が定義された *Object* をキャッシュに保存する。*Get* メソッドはハッシュ値を指定すると同一のハッシュ値である *Object* を取得することができる。キャッシュアルゴリズムには簡易的な LRU を採用している。この簡易的 LRU を便宜上 N-Stage Cache Algorithm と呼称する。N-Srtage Cache Algorithm は *N* 個の辞書を持つ。*i* 番目の辞書を*i-Stage Cache* と呼び、最も最近使われたものが保存される辞書を *rerent-Stage*、最も使われたのが古い辞書を *oldest-Stage* と呼ぶ。*Get* または *Set* メソッドでアクセスされた要素を *recent-Stage* のキャッシュに乗せる。*Set* メソッドを実行した際にキャッシュのサイズを上回ったとき、*oldest-Stage* にキャッシュされている要素を無作為に一つ選び削除する。もし *oldest-Stage* のキャッシュが空の場合は *oldest-Stage*, *recent-Stage* をそれぞれインクリメントした後 *N* で *mod* をとる。これにより擬似的なLRUアルゴリズムを実現した。*Set*, *Get*はそれぞれ *O(1)* で実行できる。(v1.0a)
+
 ### MapQueue
 　*MapQueue* は排他制御付きキャッシングキューデータ構造である。*MapQueue* は *Push*, *Pop*, *Erase* メソッドを持つ。 *Push* メソッドは ハッシュ関数が定義された *Object*を *Queue*に追加する。*Pop* メソッドは *Queue*の先頭Objectを取得する。*Erase* はハッシュ値を指定して同一のハッシュ値を持つObjectをQueueから削除する。*Push*, *Pop*, *Erase*はそれぞれならし計算量O(1)で実行できる。
+
 ### MerkleTree
 MerkleTree はリストオブジェクトとその部分列のハッシュ値を計算できるデータ構造である。*MerkleTree* は *Push*, *Hash* メソッドを持つ。 *Push* メソッドはハッシュ関数が定義された *Object* をリストの先頭に追加する。*Hash* メソッドはリスト全体のハッシュ値を取得する。 簡易的な実装として*RootHash* としてハッシュ値の総和を持つ実装をしている。累積的にハッシュ値を計算することで *Push*, *Hash* メソッドをそれぞれ *O(1)* で実行できる。ここで ハッシュ値の計算を *O(1)* とする。
+
 ### MerklePatriciaTree
 　*MerklePatriciaTree*[4] は部分木のハッシュ値を計算できる基数木データ構造である。*MerklePatriciaTree* は *Search*, *Find*, *Upsert*, *Set*, *Get*, *Hash* メソッドを持つ。*Serach* メソッドではキー値と 接頭辞が一致している最も浅い内部ノード（部分木）を取得する。*Find* メソッドはキー値で参照した先の葉ノードを取得する。*Upsert* メソッドはキー値とバリュー値が定義されたノードを *MerklePatriciaTree* に追加または更新する。*Set* メソッドはルートハッシュを指定して木のルートを変更する。*Get* メソッドはルートハッシュ指定して内部ノード（部分木）を取得する。*Hash* メソッドでは木のルートハッシュを取得する。*MerklePatriciaTree* ではキー値を基数木の内部ノードとして且つ経路圧縮を行うことで *Search*, *Find*, *Upsert*, をそれぞれ *O(|key|)*, *Set*, *Get*, を *O(1)*, *Hash* を *O(|set of character of key|)* で計算できる。
 
 ## Repository
 　*Repository* は Proskenion 上でデータを保存する機構ある。データを保存する形式またそのデータ構造について定義する。Proskenion  には3つの *MerklePatriciaTree* が実装されている。ブロックの列の状態を保存する *BlockChain*, 実行された取引の履歴を保存する *TxHistory*, Proskenion 上のオブジェクトを保存する *WSV(World State View)* とそれぞれ定義する。*WSV* では *Address* 型の *id* によって指定された場所に *Account*, *Peer* または *Storage* を保存している。また一時的に保存されるデータ機構として、*Block* に内包する *Transaction* のリストを保存する *TxList*, クライアントまた他ピアから受け取った *Transaction* を保存する *TxQueue*, 他ピアから受け取った *Block* を保存する *BlockQueue*, 他ピアから受け取った *TxList* を保存する *TxListCache*, *Peer* の通信経路を保存しておく *ClientCache* が実装されている。
+
 ### TxList
 　*TxList* は *Transaction* のリストと全体のハッシュを持つ *MerkleTree* である。*TxList* は *Push*, *List*, *Size*, *Hash* メソッドを持つ。*Push* メソッドは *Transaction* をリストに追加する。 *List* メソッドは *Transaction* のリストを取得する。*Size* は *TxList* が持っている *Transaction* の数を取得する。 *Hash* メソッドは *Transaction* リストの累積ハッシュを取得する。
+
 ### BlockChain
 　*BlockChain* は *Block* の列を保存する *MerklePatriciaTree* である。*Block* のハッシュ値をキー値, *Block* の実体をバリュー値とおく。*BlockChain* では *Next*, *Get*, *Append*メソッドを持つ。*Next* メソッドは *Block* のハッシュ値を指定してそのBlockの次の *Block* を取得する。*Get* メソッドは *Block* のハッシュ値を指定して *Block* を取得する。*Append* メソッドは *BlockChain* に *Block* を追加する。*MerklePatriciaTree* を利用することでブロックチェーンの分岐に対応することができる。
+
 ### TxHistory
 　*TxHistory* は取引の履歴を保存する *MerklePatriciaTree* である。*TxList* のハッシュ値をキー値、 *TxList* の実体をバリュー値におく。また、*Transaction* のハッシュ値をキー値、*TxList* のハッシュ値とその添え字のペアをバリュー値におく。*TxHistory* では *GetTxList*, *GetTx*, *Append* メソッドを持つ。*GetTxList* メソッドは *TxList* のハッシュ値を指定して *TxList* を取得する。 *GetTx* は *Transaction* のハッシュ値を指定して *Transaction* を取得する。 *Append* は *TxList* とそれが包含する *Transaction* を履歴に追加する。*MerklePatriciaTree* を利用することでブロックチェーンの分岐に対応することができる。
+
 ### WorldStateView
 　*WSV* は Proskenion 上で操作する状態を保存する *MerklePatriciaTree* である。*Address* を *StorageName*, *reverse(DomainName)*,*AccountName* の順で並べたものをキー値、*Account*, *Peer* または *Storage* の実体をバリュー値におく。*Account* を置く時の *StorageName* は `account`, *Peer* を置く時の *StorageName* は `peer` とデフォルトで定めている。*WSV* は *Query*, *QueryAll*, *Append* メソッドが実装されている。*Query* メソッドは検索対象の *Address* をキー値として *Account*, *Peer* または *Storage* を取得する。*QueryAll* メソッドは検索対象の *Address* をキー値として接頭辞が一致している部分木から *Account*, *Peer* または *Storage* のリストを取得する。*Append* は追加する対象の *Address* をキー値として *Account*, *Peer* または *Storage* を *WSV* に追加する。*MerklePatriciaTree* を利用することでブロックチェーンの分岐に対応することができる。
+
 ### ProposalTxQueue
 　*ProposalTxQueue* はクライアントまたは他ピアから提案された *Transaction* を一時的に保存する *MapQueue* である。*ProposalTxQueue* は *Push*, *Erase*, *Pop* メソッドが実装されている。*Push* は *Transaction* を指定して *ProposalTxQueue* に追加する。*Erase* は指定したハッシュ値と一致する *ProposalTxQueue* 内の *Transaction* を削除する。*Pop* は *ProposalTxQueue* の先頭 *Transaction* を取得する。
+
 ### ProposalBlockQueue
 　*ProposalBlockQueue* はクライアントまたは他ピアから提案された *Block* を一時的に保存する *MapQueue*である。*ProposalBlockQueue* は *Push*, *Erase*, *Pop* メソッドが実装されている。*Push* は *Block* を指定して *ProposalBlockQueue* に追加する。*Erase* は指定したハッシュ値と一致する *ProposalBlockQueue* 内の *Block* を削除する。*Pop* は *ProposalBlockQueue* の先頭 *Block*を取得する。
+
 ### TxListCache
 　*TxListCache* は他ピアから提案された *TxList* を一時的に保存する *CacheMap* である。*TxListCache* は *Set*, *Get* メソッドが実装されている。*Set* メソッドは指定した *TxList*を *TxListCache* に追加する。*Get* メソッドは指定したハッシュ値から *TxList* を取得する。
+
 ### ClientCache
 　*ClientCache* は他ピアとの接続情報を一時的に保存する *CacheMap* である。 *ClientCache* は *Set*, *Get* メソッドが実装されている。*Set* メソッドは *Peer* と接続情報を指定して *ClientCache* に保存する。*Get* メソッドは指定した *Peer* の接続情報を取得する。
+
 ### Repository
 　*Repository* は Proskenion で管理しているデータ全体を総括して管理するインターフェースである。*Repository* は *Top*, *Me*, *GetDelegatedAcounts*, *Commit*, *GenesisCommit*, *CreateBlock* メソッドが実装されている。*Top* メソッドは最新且つ最も信頼度の高いブロックチェーンの先頭のブロックを取得する。*Me* メソッドは自身のピア情報を取得する。*GetDelegateAccounts* はブロックの提案者として適当なアカウントのリストを取得する。*Commit* は *Block* と *TxList* を指定して *BlockChain* に実際にコミットする。*GenesisCommit* は *TxList* を指定して全ての*Transaction* を強制的に実行して高さ 0 の *Block* をコミットする。*CreateBlock* は指定した *ProposalTxQueue*, 現在の *Round*, 現在の時刻から提案されたブロックを実行して取得する。先頭の *Block* が持っているハッシュ値から *WSV*, *TxHistory*, *BlockChain* の状態を復元してそれぞれ操作することができる。状態の復元は *MerklePatriciaTree* のルートノードのハッシュ値を参照するだけなので *O(1)* で実行できる。
 
@@ -114,16 +127,19 @@ ProSL は Proskenion 上で保存する時の *Storage* の設計は以下のよ
     }
 
 Proskenion を動かすには Consensus algorithm, Incentive algorithm, Update algorithm そして Genesis Block の4種類の設計をしなければならない。これらのそれぞれ異なるタイミングで動作する。 
+
 ### Consensus Algorithm Design
 ブロックの生成者を選出する仕組みを設計する。これは *Block* をコミットまたは作成する直前に実行される。コミットの前に実行される際はブロックの生成者が適切かどうかの検証に用いる。作成の前に実行される際は自分がブロックの作成者として適切かを判定するために用いる。これは *Account*のリストを返す。このリストの先頭から現在の *Round* 番目のアカウントが信頼している *Peer* が正しいブロックの生成者である。
+
 ### Incentive Algorithm Design
 インセンティブ付与の仕組みを設計する。これは *Block* をコミットする過程で実行される。これは *Transaction* を返す。この *Transaction* は ProSL が実行された直後に強制的に実行され変更が *BlockChain* に刻まれる。
+
 ### Update Algorithm Design
 Consensus, Incentive, Update algorithm を変更するための条件を設計する。これは `CheckAndCommitProsl` という特殊なコマンドが実行された時に実行する。これは真偽値を返す。*True* が返った場合は提案された新たなアルゴリズムが適用される。
+
 ### Genesis Block Design
 高さ0の *Block* で実行する命令群を設計する。これは Proskenion の初回起動時に一度だけ実行される。これは *Transaction* を返す。この *Transaction* は初回のブロックにて強制的に実行され変更が *BlockChain* に刻まれる。
 
-// TODO
 ## ProSL Operators
 
 ProSL の BNF は以下の通りである。この BNF では `<variableName: operatorTypeName>` の形式で記述する。`[op]` は Operator `op` のリストを示す。`{STRING:op}` は *key* が *STRING* である *Operator* `op` の辞書型を示す。`<var:op>?` は *Operator* `op` が *optional* であることを示す。
@@ -255,7 +271,7 @@ Synchronzier はデータ同期を行う機構である。Synchronizer では *P
 
 # API
 
-各コマンドの作用などは *Documents* を参照[https://github.com/proskenion.github.io]。
+各コマンドの作用などは API Documents ([https://proskenion.github.io/docs](https://proskenion.github.io/docs)) を参照。
 
 ## Write
 
@@ -330,19 +346,19 @@ Proskenion の Usecase について考える。
 
 　クリエータを主体とする新たな合意形成アルゴリズム “Proof of Creator” を提案する。仮にクリエータ同士の関係をフォロー/フォロワーを示す有効グラフで表現する。この有向グラフから PageRank を計算して出した “クリエータのrank” をクリエータの信頼度とする。信頼度の上位4人によって指定されたシステム運営者達がブロックの生成を順繰りに行う。これにより、より良いクリエータがサーバを選出するクリエータが主体であるような運営システムを構築することができる。[Figure1]
 
-![Figure1. Proof of Creator Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634997921_+2019-03-04+02.42.48.png)
+![Figure1. Proof of Creator Mining](figures/figure1.png)
 
 ## Selection of Ms.Contest
 
 システムのテスト運用という意味でミスコンのような短期的な人気投票システムを行うのも面白い。ミスコンのエントリー者をクリエータと定義して彼らのインセンティブ設計が直接評価方法となり実証実験的なコンテストが開催可能であると思われる。[Figure2]
 
-![Figure2. Ms.Contest Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998114_+2019-03-04+02.43.09.png)
+![Figure2. Ms.Contest Mining](figures/figure2.png)
 
 ## Online Comic Market Platform
 
 　オンライン上でコミックマーケットのような仕組みを模擬する。Proskenion  を用いることで自治コミュニティが運営する同人即売サービスが実現できる。クリエータを同人作家と定義して作品の販売をマイニングと位置づける。評価は他のクリエータからの信頼度と販売利益と定義する。[Figure3]
 
-![Figure3. Online comic market platform Mining](https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998118_+2019-03-04+02.42.58.png)
+![Figure3. Online comic market platform Mining](figures/figure3.png)
 
 # Conclusion
 

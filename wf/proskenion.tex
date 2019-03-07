@@ -12,7 +12,7 @@ system can be realized with Proskenion.
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-　昨今では、BitCoin{[}1{]} や Ethereum{[}2{]}
+　昨今では、BitCoin\cite{1} や Ethereum\cite{2}
 を始めとするブロックチェーン技術が台頭し空前の仮想通貨ブームを引き起こした。ブロックチェーン技術はビットコイン開発の過程で生まれ、ビットコインの取引を記録する分散型台帳を実現するための技術であった。分散型台帳技術はデータベースを一つのサーバで中央集権的に管理するのではなく複数のサーバで分散管理することで単一点障害耐性を持ったデータベースである。ブロックチェーンはそれに加え「ブロック」というデータの単位を生成し、チェーンのように連結していくことによりデータを保管する。このブロックは一つ前のブロックのハッシュ値を持っているためブロックに書き込まれたデータを改ざんするにはその場所から先頭までの全てのブロックを改ざんする必要がある。このため、ブロックチェーンでは改ざんに対する強い耐性を持っているとされている。分散台帳では複数のサーバが同一のデータを保持するために様々な合意形成アルゴリズムが考案されている。しかし、それらには未だ技術的課題がいくつも残されており実用に耐えうる代物ではなかった。代表的な問題としてスケーラビリティ、情報透過性、などがある。また、仕様変更に伴って発生するハードフォークにも問題があり
 \emph{Ethereum}の合意形成アルゴリズムの移行は非常に大変な作業だった。
 
@@ -38,7 +38,7 @@ system can be realized with Proskenion.
 \hypertarget{primitive}{%
 \subsection{Primitive}\label{primitive}}
 
-　\emph{Primitive} な型 として Protocol-Buffers{[}3{]}
+　\emph{Primitive} な型 として Protocol-Buffers\cite{3}
 で定義されている標準型を使用できる。Protocol-Buffers では標準で真偽型,
 32bit符号付き整数型, 64bit符号付き整数型, 32bit符号なし整数型,
 64bit符号なし整数型, 文字列型, バイト列型, 配列型, 辞書型
@@ -188,7 +188,11 @@ Mechanism}\label{system-datastructure-mechanism}}
 \subsection{DataStructure}\label{datastructure}}
 
 　\emph{DataStructure} は Proskenion
-上で実装されている。プリミティブなデータ構造である。 \#\#\# CacheMap
+上で実装されている。プリミティブなデータ構造である。
+
+\hypertarget{cachemap}{%
+\subsubsection{CacheMap}\label{cachemap}}
+
 　\emph{CacheMap}
 は排他制御付きキャッシングデータ構造である。\emph{CacheMap} は
 \emph{Set}, \emph{Get} メソッドを持つ。\emph{Set}
@@ -209,7 +213,11 @@ Mechanism}\label{system-datastructure-mechanism}}
 \emph{recent-Stage} をそれぞれインクリメントした後 \emph{N} で
 \emph{mod}
 をとる。これにより擬似的なLRUアルゴリズムを実現した。\emph{Set},
-\emph{Get}はそれぞれ \emph{O(1)} で実行できる。(v1.0a) \#\#\# MapQueue
+\emph{Get}はそれぞれ \emph{O(1)} で実行できる。(v1.0a)
+
+\hypertarget{mapqueue}{%
+\subsubsection{MapQueue}\label{mapqueue}}
+
 　\emph{MapQueue}
 は排他制御付きキャッシングキューデータ構造である。\emph{MapQueue} は
 \emph{Push}, \emph{Pop}, \emph{Erase} メソッドを持つ。 \emph{Push}
@@ -217,8 +225,12 @@ Mechanism}\label{system-datastructure-mechanism}}
 \emph{Queue}に追加する。\emph{Pop} メソッドは
 \emph{Queue}の先頭Objectを取得する。\emph{Erase}
 はハッシュ値を指定して同一のハッシュ値を持つObjectをQueueから削除する。\emph{Push},
-\emph{Pop}, \emph{Erase}はそれぞれならし計算量O(1)で実行できる。 \#\#\#
-MerkleTree MerkleTree
+\emph{Pop}, \emph{Erase}はそれぞれならし計算量O(1)で実行できる。
+
+\hypertarget{merkletree}{%
+\subsubsection{MerkleTree}\label{merkletree}}
+
+MerkleTree
 はリストオブジェクトとその部分列のハッシュ値を計算できるデータ構造である。\emph{MerkleTree}
 は \emph{Push}, \emph{Hash} メソッドを持つ。 \emph{Push}
 メソッドはハッシュ関数が定義された \emph{Object}
@@ -227,8 +239,12 @@ MerkleTree MerkleTree
 簡易的な実装として\emph{RootHash}
 としてハッシュ値の総和を持つ実装をしている。累積的にハッシュ値を計算することで
 \emph{Push}, \emph{Hash} メソッドをそれぞれ \emph{O(1)}
-で実行できる。ここで ハッシュ値の計算を \emph{O(1)} とする。 \#\#\#
-MerklePatriciaTree 　\emph{MerklePatriciaTree}{[}4{]}
+で実行できる。ここで ハッシュ値の計算を \emph{O(1)} とする。
+
+\hypertarget{merklepatriciatree}{%
+\subsubsection{MerklePatriciaTree}\label{merklepatriciatree}}
+
+　\emph{MerklePatriciaTree}\cite{4}
 は部分木のハッシュ値を計算できる基数木データ構造である。\emph{MerklePatriciaTree}
 は \emph{Search}, \emph{Find}, \emph{Upsert}, \emph{Set}, \emph{Get},
 \emph{Hash} メソッドを持つ。\emph{Serach} メソッドではキー値と
@@ -263,14 +279,22 @@ MerklePatriciaTree 　\emph{MerklePatriciaTree}{[}4{]}
 \emph{TxQueue}, 他ピアから受け取った \emph{Block} を保存する
 \emph{BlockQueue}, 他ピアから受け取った \emph{TxList} を保存する
 \emph{TxListCache}, \emph{Peer} の通信経路を保存しておく
-\emph{ClientCache} が実装されている。 \#\#\# TxList 　\emph{TxList} は
-\emph{Transaction} のリストと全体のハッシュを持つ \emph{MerkleTree}
-である。\emph{TxList} は \emph{Push}, \emph{List}, \emph{Size},
-\emph{Hash} メソッドを持つ。\emph{Push} メソッドは \emph{Transaction}
-をリストに追加する。 \emph{List} メソッドは \emph{Transaction}
-のリストを取得する。\emph{Size} は \emph{TxList} が持っている
-\emph{Transaction} の数を取得する。 \emph{Hash} メソッドは
-\emph{Transaction} リストの累積ハッシュを取得する。 \#\#\# BlockChain
+\emph{ClientCache} が実装されている。
+
+\hypertarget{txlist}{%
+\subsubsection{TxList}\label{txlist}}
+
+　\emph{TxList} は \emph{Transaction} のリストと全体のハッシュを持つ
+\emph{MerkleTree} である。\emph{TxList} は \emph{Push}, \emph{List},
+\emph{Size}, \emph{Hash} メソッドを持つ。\emph{Push} メソッドは
+\emph{Transaction} をリストに追加する。 \emph{List} メソッドは
+\emph{Transaction} のリストを取得する。\emph{Size} は \emph{TxList}
+が持っている \emph{Transaction} の数を取得する。 \emph{Hash} メソッドは
+\emph{Transaction} リストの累積ハッシュを取得する。
+
+\hypertarget{blockchain}{%
+\subsubsection{BlockChain}\label{blockchain}}
+
 　\emph{BlockChain} は \emph{Block} の列を保存する
 \emph{MerklePatriciaTree} である。\emph{Block} のハッシュ値をキー値,
 \emph{Block} の実体をバリュー値とおく。\emph{BlockChain} では
@@ -279,10 +303,14 @@ MerklePatriciaTree 　\emph{MerklePatriciaTree}{[}4{]}
 \emph{Block} を取得する。\emph{Get} メソッドは \emph{Block}
 のハッシュ値を指定して \emph{Block} を取得する。\emph{Append} メソッドは
 \emph{BlockChain} に \emph{Block} を追加する。\emph{MerklePatriciaTree}
-を利用することでブロックチェーンの分岐に対応することができる。 \#\#\#
-TxHistory 　\emph{TxHistory} は取引の履歴を保存する
-\emph{MerklePatriciaTree} である。\emph{TxList} のハッシュ値をキー値、
-\emph{TxList} の実体をバリュー値におく。また、\emph{Transaction}
+を利用することでブロックチェーンの分岐に対応することができる。
+
+\hypertarget{txhistory}{%
+\subsubsection{TxHistory}\label{txhistory}}
+
+　\emph{TxHistory} は取引の履歴を保存する \emph{MerklePatriciaTree}
+である。\emph{TxList} のハッシュ値をキー値、 \emph{TxList}
+の実体をバリュー値におく。また、\emph{Transaction}
 のハッシュ値をキー値、\emph{TxList}
 のハッシュ値とその添え字のペアをバリュー値におく。\emph{TxHistory} では
 \emph{GetTxList}, \emph{GetTx}, \emph{Append}
@@ -291,8 +319,12 @@ TxHistory 　\emph{TxHistory} は取引の履歴を保存する
 \emph{Transaction} のハッシュ値を指定して \emph{Transaction}
 を取得する。 \emph{Append} は \emph{TxList} とそれが包含する
 \emph{Transaction} を履歴に追加する。\emph{MerklePatriciaTree}
-を利用することでブロックチェーンの分岐に対応することができる。 \#\#\#
-WorldStateView 　\emph{WSV} は Proskenion 上で操作する状態を保存する
+を利用することでブロックチェーンの分岐に対応することができる。
+
+\hypertarget{worldstateview}{%
+\subsubsection{WorldStateView}\label{worldstateview}}
+
+　\emph{WSV} は Proskenion 上で操作する状態を保存する
 \emph{MerklePatriciaTree} である。\emph{Address} を \emph{StorageName},
 \emph{reverse(DomainName)},\emph{AccountName}
 の順で並べたものをキー値、\emph{Account}, \emph{Peer} または
@@ -308,16 +340,23 @@ WorldStateView 　\emph{WSV} は Proskenion 上で操作する状態を保存す
 のリストを取得する。\emph{Append} は追加する対象の \emph{Address}
 をキー値として \emph{Account}, \emph{Peer} または \emph{Storage} を
 \emph{WSV} に追加する。\emph{MerklePatriciaTree}
-を利用することでブロックチェーンの分岐に対応することができる。 \#\#\#
-ProposalTxQueue 　\emph{ProposalTxQueue}
-はクライアントまたは他ピアから提案された \emph{Transaction}
-を一時的に保存する \emph{MapQueue} である。\emph{ProposalTxQueue} は
-\emph{Push}, \emph{Erase}, \emph{Pop}
+を利用することでブロックチェーンの分岐に対応することができる。
+
+\hypertarget{proposaltxqueue}{%
+\subsubsection{ProposalTxQueue}\label{proposaltxqueue}}
+
+　\emph{ProposalTxQueue} はクライアントまたは他ピアから提案された
+\emph{Transaction} を一時的に保存する \emph{MapQueue}
+である。\emph{ProposalTxQueue} は \emph{Push}, \emph{Erase}, \emph{Pop}
 メソッドが実装されている。\emph{Push} は \emph{Transaction} を指定して
 \emph{ProposalTxQueue} に追加する。\emph{Erase}
 は指定したハッシュ値と一致する \emph{ProposalTxQueue} 内の
 \emph{Transaction} を削除する。\emph{Pop} は \emph{ProposalTxQueue}
-の先頭 \emph{Transaction} を取得する。 \#\#\# ProposalBlockQueue
+の先頭 \emph{Transaction} を取得する。
+
+\hypertarget{proposalblockqueue}{%
+\subsubsection{ProposalBlockQueue}\label{proposalblockqueue}}
+
 　\emph{ProposalBlockQueue} はクライアントまたは他ピアから提案された
 \emph{Block} を一時的に保存する
 \emph{MapQueue}である。\emph{ProposalBlockQueue} は \emph{Push},
@@ -325,18 +364,30 @@ ProposalTxQueue 　\emph{ProposalTxQueue}
 \emph{Block} を指定して \emph{ProposalBlockQueue}
 に追加する。\emph{Erase} は指定したハッシュ値と一致する
 \emph{ProposalBlockQueue} 内の \emph{Block} を削除する。\emph{Pop} は
-\emph{ProposalBlockQueue} の先頭 \emph{Block}を取得する。 \#\#\#
-TxListCache 　\emph{TxListCache} は他ピアから提案された \emph{TxList}
+\emph{ProposalBlockQueue} の先頭 \emph{Block}を取得する。
+
+\hypertarget{txlistcache}{%
+\subsubsection{TxListCache}\label{txlistcache}}
+
+　\emph{TxListCache} は他ピアから提案された \emph{TxList}
 を一時的に保存する \emph{CacheMap} である。\emph{TxListCache} は
 \emph{Set}, \emph{Get} メソッドが実装されている。\emph{Set}
 メソッドは指定した \emph{TxList}を \emph{TxListCache}
 に追加する。\emph{Get} メソッドは指定したハッシュ値から \emph{TxList}
-を取得する。 \#\#\# ClientCache 　\emph{ClientCache}
-は他ピアとの接続情報を一時的に保存する \emph{CacheMap} である。
-\emph{ClientCache} は \emph{Set}, \emph{Get}
+を取得する。
+
+\hypertarget{clientcache}{%
+\subsubsection{ClientCache}\label{clientcache}}
+
+　\emph{ClientCache} は他ピアとの接続情報を一時的に保存する
+\emph{CacheMap} である。 \emph{ClientCache} は \emph{Set}, \emph{Get}
 メソッドが実装されている。\emph{Set} メソッドは \emph{Peer}
 と接続情報を指定して \emph{ClientCache} に保存する。\emph{Get}
-メソッドは指定した \emph{Peer} の接続情報を取得する。 \#\#\# Repository
+メソッドは指定した \emph{Peer} の接続情報を取得する。
+
+\hypertarget{repository-1}{%
+\subsubsection{Repository}\label{repository-1}}
+
 　\emph{Repository} は Proskenion
 で管理しているデータ全体を総括して管理するインターフェースである。\emph{Repository}
 は \emph{Top}, \emph{Me}, \emph{GetDelegatedAcounts}, \emph{Commit},
@@ -366,7 +417,7 @@ Proskenion Domain Specific Language(以下、ProSL) は Proskenion
 は無限ループを避けるためにチューリング完全でない命令セットを用いている。ProSL
 は Protocol-Buffers で定義されており、内部での DSL
 の検証、実行もシリアライズされた Protocol-Buffers のデータを用いる。ver
-1.0a では YAML{[}5{]} によって書かれた ProSL を Protocol-Buffers
+1.0a では YAML\cite{5} によって書かれた ProSL を Protocol-Buffers
 に変換するコードが実装されている。Proskenion 上では Protocol-Buffers
 を用いて制御するため、 Procol-Buffers への変換コードさえ実装すれば YAML
 以外でも ProSL を記述可能になる。
@@ -387,25 +438,41 @@ ProSL は Proskenion 上で保存する時の \emph{Storage}
 Proskenion を動かすには Consensus algorithm, Incentive algorithm, Update
 algorithm そして Genesis Block
 の4種類の設計をしなければならない。これらのそれぞれ異なるタイミングで動作する。
-\#\#\# Consensus Algorithm Design
+
+\hypertarget{consensus-algorithm-design}{%
+\subsubsection{Consensus Algorithm
+Design}\label{consensus-algorithm-design}}
+
 ブロックの生成者を選出する仕組みを設計する。これは \emph{Block}
 をコミットまたは作成する直前に実行される。コミットの前に実行される際はブロックの生成者が適切かどうかの検証に用いる。作成の前に実行される際は自分がブロックの作成者として適切かを判定するために用いる。これは
 \emph{Account}のリストを返す。このリストの先頭から現在の \emph{Round}
 番目のアカウントが信頼している \emph{Peer}
-が正しいブロックの生成者である。 \#\#\# Incentive Algorithm Design
+が正しいブロックの生成者である。
+
+\hypertarget{incentive-algorithm-design}{%
+\subsubsection{Incentive Algorithm
+Design}\label{incentive-algorithm-design}}
+
 インセンティブ付与の仕組みを設計する。これは \emph{Block}
 をコミットする過程で実行される。これは \emph{Transaction} を返す。この
 \emph{Transaction} は ProSL が実行された直後に強制的に実行され変更が
-\emph{BlockChain} に刻まれる。 \#\#\# Update Algorithm Design Consensus,
-Incentive, Update algorithm を変更するための条件を設計する。これは
-\texttt{CheckAndCommitProsl}
+\emph{BlockChain} に刻まれる。
+
+\hypertarget{update-algorithm-design}{%
+\subsubsection{Update Algorithm Design}\label{update-algorithm-design}}
+
+Consensus, Incentive, Update algorithm
+を変更するための条件を設計する。これは \texttt{CheckAndCommitProsl}
 という特殊なコマンドが実行された時に実行する。これは真偽値を返す。\emph{True}
-が返った場合は提案された新たなアルゴリズムが適用される。 \#\#\# Genesis
-Block Design 高さ0の \emph{Block} で実行する命令群を設計する。これは
-Proskenion の初回起動時に一度だけ実行される。これは \emph{Transaction}
-を返す。この \emph{Transaction}
-は初回のブロックにて強制的に実行され変更が \emph{BlockChain}
-に刻まれる。
+が返った場合は提案された新たなアルゴリズムが適用される。
+
+\hypertarget{genesis-block-design}{%
+\subsubsection{Genesis Block Design}\label{genesis-block-design}}
+
+高さ0の \emph{Block} で実行する命令群を設計する。これは Proskenion
+の初回起動時に一度だけ実行される。これは \emph{Transaction} を返す。この
+\emph{Transaction} は初回のブロックにて強制的に実行され変更が
+\emph{BlockChain} に刻まれる。
 
 // TODO \#\# ProSL Operators
 
@@ -585,8 +652,8 @@ Synchronzier はデータ同期を行う機構である。Synchronizer では \e
 \hypertarget{api}{%
 \section{API}\label{api}}
 
-各コマンドの作用などは \emph{Documents}
-を参照{[}https://github.com/proskenion.github.io{]}。
+各コマンドの作用などは API Documents
+(\url{https://proskenion.github.io/docs}) を参照。
 
 \hypertarget{write}{%
 \subsection{Write}\label{write}}
@@ -690,7 +757,7 @@ PageRank を計算して出した ``クリエータのrank''
 
 \begin{figure}
 \centering
-\includegraphics{https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634997921_+2019-03-04+02.42.48.png}
+\includegraphics{figures/figure1.png}
 \caption{Figure1. Proof of Creator Mining}
 \end{figure}
 
@@ -701,7 +768,7 @@ PageRank を計算して出した ``クリエータのrank''
 
 \begin{figure}
 \centering
-\includegraphics{https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998114_+2019-03-04+02.43.09.png}
+\includegraphics{figures/figure2.png}
 \caption{Figure2. Ms.Contest Mining}
 \end{figure}
 
@@ -714,7 +781,7 @@ Platform}\label{online-comic-market-platform}}
 
 \begin{figure}
 \centering
-\includegraphics{https://d2mxuefqeaa7sj.cloudfront.net/s_FA1D093D0EC7FFF24C90E55F2C15C3428DC2EF11A4A38F58350CFC712E4792F4_1551634998118_+2019-03-04+02.42.58.png}
+\includegraphics{figures/figure3.png}
 \caption{Figure3. Online comic market platform Mining}
 \end{figure}
 
@@ -732,33 +799,22 @@ Platform}\label{online-comic-market-platform}}
 が ``どのような結果をもたらすか''
 の実験を中\textasciitilde 小規模で行うのに向いている。また、 Proskenion
 が実運用されるための世界の基盤を創るための新たなブロックチェーン開発も進めたい。最近注目されているブロックチェーン開発ツールキットとして
-``Substrate{[}6{]}''
+``Substrate\cite{6}''
 というものがある。これは複数のブロックチェーンを繋げる Project
-の一環として作られたものであり、Polkadot{[}7{]} の Project
+の一環として作られたものであり、Polkadot\cite{7} の Project
 の一つである。これを用いてスケーラビリティと相互交換性を担保する新たなブロックチェーンの開発を行う。
 
 \hypertarget{acknowledgement}{%
 \section{Acknowledgement}\label{acknowledgement}}
 
-\hypertarget{references}{%
-\subsection{References}\label{references}}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  BitCoin {[}https://bitcoin.org/bitcoin.pdf{]}
-\item
-  Ethereum {[}https://ethereum.github.io/yellowpaper/paper.pdf{]}
-\item
-  Protocol-Buffers {[}https://developers.google.com/protocol-buffers/{]}
-\item
-  MerklePatriciaTree
-  {[}https://github.com/ethereum/wiki/wiki/Patricia-Tree{]}
-\item
-  YAML {[}https://yaml.org/spec/history/2001-05-26.html{]}
-\item
-  Substrate {[}https://www.parity.io/what-is-substrate/{]}
-\item
-  Polkadot {[}https://polkadot.network/{]}
-\end{enumerate}
+\begin{thebibliography}{9}
+\bibitem{1} BitCoin {[}https://bitcoin.org/bitcoin.pdf{]}
+\bibitem{2}  Ethereum {[}https://ethereum.github.io/yellowpaper/paper.pdf{]}
+\bibitem{3}  Protocol-Buffers {[}https://developers.google.com/protocol-buffers/{]}
+\bibitem{4} MerklePatriciaTree
+{[}https://github.com/ethereum/wiki/wiki/Patricia-Tree{]}
+\bibitem{5}  YAML {[}https://yaml.org/spec/history/2001-05-26.html{]}
+\bibitem{6}  Substrate {[}https://www.parity.io/what-is-substrate/{]}
+\bibitem{7}  Polkadot {[}https://polkadot.network/{]}
+\end{thebibliography}
