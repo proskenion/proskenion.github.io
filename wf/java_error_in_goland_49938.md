@@ -261,36 +261,36 @@ Synchronzier はデータ同期を行う機構である。Synchronizer では *P
 
 *Transaction* の設計は以下のようになっている。
 
-    *message*Transaction {
-        *message*Payload {
-            int64 *createdTime*= 1;
-            *repeated*Command *commands*= 2;
+    message Transaction {
+        message Payload {
+            int64 createdTime = 1;
+            repeated Command commands = 2;
         }
-        *Payload*payload = 1;
-        *repeated*Signature *signatures*= 2;
+        Payload payload = 1;
+        repeated Signature signatures = 2;
     }
-    *message*Command {
-        *string* *authorizerId*= 1;
-        *string*targetId = 2;
-        *oneof*command {
-            *CreateAccount*createAccount = 3;
-            *AddBalance*addBalance = 4;
-            *TransferBalance*transferBalance = 5;
-            *AddPublicKeys*addPublicKeys = 6;
-            *RemovePublicKeys*removePublicKeys = 7;
-            *SetQuorum*setQuorum = 8;
-            *DefineStorage*defineStorage = 9;
-            *CreateStorage*createStorage = 10;
-            *UpdateObject*updateObject = 11;
-            *AddObject*addObject = 12;
-            *TransferObject*transferObject = 13;
-            *AddPeer*addPeer = 14;
-            *ActivatePeer*activatePeer = 15;
-            *SuspendPeer*suspendPeer = 16;
-            *BanPeer*banPeer = 17;
-            *Consign*consign = 18;
-            *CheckAndCommitProsl*checkAndCommitProsl = 19;
-            *ForceUpdateStorage*forceUpdateStorage = 30;
+    message Command {
+        string authorizerId = 1;
+        string targetId = 2;
+        oneof command {
+            CreateAccount createAccount = 3;
+            AddBalance addBalance = 4;
+            TransferBalance transferBalance = 5;
+            AddPublicKeys addPublicKeys = 6;
+            RemovePublicKeys removePublicKeys = 7;
+            SetQuorum setQuorum = 8;
+            DefineStorage defineStorage = 9;
+            CreateStorage createStorage = 10;
+            UpdateObject updateObject = 11;
+            AddObject addObject = 12;
+            TransferObject transferObject = 13;
+            AddPeer addPeer = 14;
+            ActivatePeer activatePeer = 15;
+            SuspendPeer suspendPeer = 16;
+            BanPeer banPeer = 17;
+            Consign consign = 18;
+            CheckAndCommitProsl checkAndCommitProsl = 19;
+            ForceUpdateStorage forceUpdateStorage = 30;
        }
     }
 
@@ -300,24 +300,24 @@ Synchronzier はデータ同期を行う機構である。Synchronizer では *P
 
 *Query* の設計は以下のようになっている。
 
-    *message*Query {
-        *message*Payload {
-            *string*authorizerId = 1;
-            *string*select = 2;
-            *ObjectCode*requstCode = 3;
-            *string*fromId = 4;
-            *string*where = 5;
-            *OrderBy*orderBy = 6;
-            int32 *limit*= 7;
-            int64 *createdTime*= 8;
+    message Query {
+        message Payload {
+            string authorizerId = 1;
+            string select = 2;
+            ObjectCode requstCode = 3;
+            string fromId = 4;
+            string where = 5;
+            OrderBy orderBy = 6;
+            int32 limit = 7;
+            int64 createdTime = 8;
         }
-        *Payload*payload = 1;
-        *Signature*signature = 2;
+        Payload payload = 1;
+        Signature signature = 2;
     }
     
-    *message*QueryResponse {
-        *Object*object = 1;
-        *Signature*signature = 2;
+    message QueryResponse {
+        Object object = 1;
+        Signature signature = 2;
     }
 
 *AuthorizerId* は誰の権限で *Query* を発行するかを *AccountId* で指定、*FromId* は検索対象となる *Address* を指定、*Select* は取得する *Object* の型を指定する。*FromId* で指定した検索対象が範囲検索（ *WalletId* ではない）の場合に追加で検索クエリを設定できる。*Where* は取得した *Object* のリストにフィルターをかける条件式を指定、*OrderBy* は取得したリストをソートするルールを指定、*Limit* は取得したリストの何番目までを返すかを指定する。*Signature* には *Payload* を *Authorizer* が署名したものを指定する。検索結果は *QueryResponse* として返ってくる。*Object* は *Query* を実行した結果返ってきたオブジェクト、*Signature* は *Query* を実行した *Peer* が *Object* を署名したものが入っている。
