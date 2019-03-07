@@ -188,7 +188,7 @@ TxGate は Client から Transaction を受け取る
 
 
 <a name="consensus.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## consensus.proto
 
@@ -253,7 +253,7 @@ InvalidArgument (code = 3) : One of following conditions: 1 ) Block is nil. 2 ) 
 
 
 <a name="objects.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## objects.proto
 
@@ -917,7 +917,7 @@ TargetId は WalletId を指定する<br />
 
 
 <a name="prosl.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## prosl.proto
 
@@ -1784,7 +1784,7 @@ return ListObeject[left, right) : left == nil: left is 0, right == nil: right is
 
 
 <a name="query.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## query.proto
 
@@ -1850,7 +1850,7 @@ QueryResponse は Read RPC の返り値である<br />
 
 
 <a name="sync.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## sync.proto
 
