@@ -151,7 +151,7 @@ title: Proskenion
 
 
 <a name="api.proto"></a>
-<p align="right"><a href="#top">Top</a></pre>
+<p align="right"><a href="#top">Top</a></p>
 
 ## api.proto
 
