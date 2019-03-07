@@ -1,3 +1,8 @@
+---
+layout: default
+title: Proskenion
+---
+
 ## About Proskenion
 
 It is a BlockChain platform that bases between the content provider and the spectator. So, "Proskenion" named from the etymology of "Prosium Arch" (Greek).
