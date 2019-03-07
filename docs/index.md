@@ -1,9 +1,5 @@
----
-layout: default
-title: Proskenion
----
-
 # Protocol Documentation
+<a name="top"></a>
 
 ## Table of Contents
 
@@ -180,8 +176,8 @@ TxGate は Client から Transaction を受け取る
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Write | [Transaction](#proskenion.Transaction) | [TxResponse](#proskenion.TxResponse) | Write は Transaction を受け付ける。 受け取った Transaction は ProposalTxQueue に挿入した後、他のPeerに伝搬する<br />InvalidArgument (code = 3) : One of following conditions: 1 ) StatelessValidator で落ちる場合 AlreadyExist (code = 6) : One of following conditions: 1 ) 既に同じ Transaction を受け取っていた場合 |
-| Read | [Query](#proskenion.Query) | [QueryResponse](#proskenion.QueryResponse) | Read は Query を受け付ける。 受け取った Query の規則に従ってデータを取得し Peer の署名を添付した QueryResponse を返す<br />InvalidArgument (code = 3) : One of following conditions: 1 ) Verify で落ちる場合 2 ) Validate で落ちる場合 NotFound (code = 5) : One of following conditions: 1 ) 検索結果が見つからなかった場合 |
+| Write | [Transaction](#proskenion.Transaction) | [TxResponse](#proskenion.TxResponse) | Write は Transaction を受け付ける。 受け取った Transaction は ProposalTxQueue に挿入した後、他のPeerに伝搬する。<br />InvalidArgument (code = 3) : One of following conditions: 1 ) StatelessValidator で落ちる場合 AlreadyExist (code = 6) : One of following conditions: 1 ) 既に同じ Transaction を受け取っていた場合 |
+| Read | [Query](#proskenion.Query) | [QueryResponse](#proskenion.QueryResponse) | Read は Query を受け付ける。 受け取った Query の規則に従ってデータを取得し Peer の署名を添付した QueryResponse を返す。<br />InvalidArgument (code = 3) : One of following conditions: 1 ) Verify で落ちる場合 2 ) Validate で落ちる場合 NotFound (code = 5) : One of following conditions: 1 ) 検索結果が見つからなかった場合 |
 
  
 
@@ -207,7 +203,8 @@ Error は GRPC Error Code で返す
 <a name="proskenion.PropagateBlockRequest"></a>
 
 ### PropagateBlockRequest
-PropagateBlock において伝搬する側が送信するデータである<br />
+PropagateBlock において伝搬する側が送信するデータである。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | block | [Block](#proskenion.Block) |  | 伝搬する Block。最初に Block を送信する。 |
@@ -221,7 +218,8 @@ PropagateBlock において伝搬する側が送信するデータである<br /
 <a name="proskenion.PropagateBlockResponse"></a>
 
 ### PropagateBlockResponse
-PropagateBlock において伝搬される側が送信するデータである<br />
+PropagateBlock において伝搬される側が送信するデータである。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | signature | [Signature](#proskenion.Signature) |  | Block を正しく受け取ったことを伝搬する側に伝えるために署名を送信する。 |
@@ -241,9 +239,11 @@ PropagateBlock において伝搬される側が送信するデータである<b
 
 ### Consensus
 ConsensusGate は合意形成に使用する rpc を定義する。
-これを使用するのは合意形成に参加するPeerのみである<br />| Method Name | Request Type | Response Type | Description |
+これを使用するのは合意形成に参加するPeerのみである。<br />
+
+| Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| PropagateTx | [Transaction](#proskenion.Transaction) | [ConsensusResponse](#proskenion.ConsensusResponse) | PropagateTx は Client から受け取った Transaction を自分以外の Peer に伝搬させる。 Context には送信者の署名をつける<br />InvalidArgument (code = 3) : One of following conditions: 1 ) StatelessValidator で落ちる場合 PermissionDenied (code = 7) : One of following conditions: 1 ) Context の 署名の主がPeerでない場合 |
+| PropagateTx | [Transaction](#proskenion.Transaction) | [ConsensusResponse](#proskenion.ConsensusResponse) | PropagateTx は Client から受け取った Transaction を自分以外の Peer に伝搬させる。 Context には送信者の署名をつける。<br />InvalidArgument (code = 3) : One of following conditions: 1 ) StatelessValidator で落ちる場合 PermissionDenied (code = 7) : One of following conditions: 1 ) Context の 署名の主がPeerでない場合 |
 | PropagateBlock | [PropagateBlockRequest](#proskenion.PropagateBlockRequest) stream | [PropagateBlockResponse](#proskenion.PropagateBlockResponse) stream | PropagateBlock は Commit する block と txList を自分以外の Peer に伝搬させる。 Context には送信者の署名をつける
 
 InvalidArgument (code = 3) : One of following conditions: 1 ) Block is nil. 2 ) Block Verify failed. 3 ) Transaction is nil. 4 ) Transaction Verify failed. AlreadyExist (code = 6) : One of following conditions: 1 ) Block is already exist in block queue. PermissionDenied (code = 7) : One of following conditions: 1 ) Context の 署名の主がPeerでない場合 |
@@ -284,8 +284,7 @@ InvalidArgument (code = 3) : One of following conditions: 1 ) Block is nil. 2 ) 
 ### ActivatePeer
 ActivatePeer は Peer を active 状態にする。
 TargetId は AccountId(PeerId) を指定する。
-Active 状態の Peer は合意形成に参加できる<br />
-
+Active 状態の Peer は合意形成に参加できる。
 
 
 
@@ -293,7 +292,8 @@ Active 状態の Peer は合意形成に参加できる<br />
 
 ### AddBalance
 AddBalance は targetId の balance を増やす。
-TargetId は AccountId を指定する<br />
+TargetId は AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | balance | [int64](#int64) |  | 増やす balance の量。 |
@@ -307,7 +307,8 @@ TargetId は AccountId を指定する<br />
 
 ### AddObject
 AddObject は TargetId で指定した Storage に Object を追加する。（list or dict)
-TargetId は WalletId を指定する<br />
+TargetId は WalletId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  | Storage 内の要素を指定するためのキー値。 |
@@ -322,7 +323,8 @@ TargetId は WalletId を指定する<br />
 
 ### AddPeer
 AddPeer はネットワークに Peer を追加する。
-TargetId は AccountId(PeerId) を指定する<br />
+TargetId は AccountId(PeerId) を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | Peer にアクセスするためのグローバルアドレス。 |
@@ -337,7 +339,8 @@ TargetId は AccountId(PeerId) を指定する<br />
 
 ### AddPublicKeys
 AddPublicKey は TragetId で指定したアカウントに鍵を追加する。
-TargetId は AccountId を指定する<br />
+TargetId は AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | publicKeys | [bytes](#bytes) | repeated | アカウントに登録する公開鍵のリスト。 |
@@ -367,15 +370,15 @@ TargetId は AccountId を指定する<br />
 ### BanPeer
 BanPeer は Peer を使用禁止にする。
 TargetId は AccountId(PeerId) を指定する。
-Ban された Peer は金輪際合意形成/同期に参加できない<br />
-
+Ban された Peer は金輪際合意形成/同期に参加できない。
 
 
 
 <a name="proskenion.Block"></a>
 
 ### Block
-Block の構造<br />
+Block の構造。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | payload | [Block.Payload](#proskenion.Block.Payload) |  |  |
@@ -413,7 +416,8 @@ Block の構造<br />
 CheckAndCommitProsl は TargetId で指定した ProSL を検証して妥当であれば適用する。
 TargetId は WalletId を指定する。
 具体的には variables を引数列として渡して Update ProSL を実行し真を返した時、
-新たな incentive or consensus or update アルゴリズムとして実際に適用する<br />
+新たな incentive or consensus or update アルゴリズムとして実際に適用する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | variables | [CheckAndCommitProsl.VariablesEntry](#proskenion.CheckAndCommitProsl.VariablesEntry) | repeated | Update ProSL を実行する際の引数列。 |
@@ -443,7 +447,8 @@ TargetId は WalletId を指定する。
 
 ### Command
 ================ Command ================
-Proskenion を操作するためのプリミティブな命令<br />
+Proskenion を操作するためのプリミティブな命令。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | authorizerId | [string](#string) |  | 誰の権限で命令を実行するかを AccountId で指定する。 |
@@ -476,7 +481,8 @@ Proskenion を操作するためのプリミティブな命令<br />
 
 ### Consign
 Consign は Account と Peer を紐付ける
-TargetId は AccountId を指定する<br />
+TargetId は AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | peerId | [string](#string) |  | アカウントが信頼する Peer の id。 |
@@ -490,7 +496,8 @@ TargetId は AccountId を指定する<br />
 
 ### CreateAccount
 CerateAccount は TargetId の アカウントの生成を行う。
-TargetId には AccountId を指定する<br />
+TargetId には AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | publicKeys | [bytes](#bytes) | repeated | アカウントに登録する公開鍵のリスト。 |
@@ -505,16 +512,15 @@ TargetId には AccountId を指定する<br />
 
 ### CreateStorage
 CreateStorage は定義された Storage を TargetId で指定されたアカウントで実体化する。
-TargetId は WalletId を指定する<br />
-
-
+TargetId は WalletId を指定する。
 
 
 <a name="proskenion.DefineStorage"></a>
 
 ### DefineStorage
 DefineStorage は Storage を定義する。
-TargetId は StorageId を指定する<br />
+TargetId は StorageId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | storage | [Storage](#proskenion.Storage) |  | Storage の key とそのデフォルトの value。 |
@@ -529,7 +535,8 @@ TargetId は StorageId を指定する<br />
 ### ForceUpdateStorage
 ForceUpdateStorage は TargetId で指定した Storage を強制上書きする。
 TargetId は WalletId を指定する。
-ForceUpdateStorage は Validate で必ず false が返る<br />
+ForceUpdateStorage は Validate で必ず false が返る。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | storage | [Storage](#proskenion.Storage) |  | 上書き後の Storage の定義。 |
@@ -706,7 +713,8 @@ ForceUpdateStorage は Validate で必ず false が返る<br />
 
 ### RemovePublicKeys
 RemovePublicKey は TargetId で指定したアカウントの鍵を削除する。
-TargetId は AccountId を指定する<br />
+TargetId は AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | publicKeys | [bytes](#bytes) | repeated | アカウントから削除する公開鍵のリスト。 |
@@ -720,7 +728,8 @@ TargetId は AccountId を指定する<br />
 
 ### SetQuorum
 SetAccountQuorum は TargetId アカウントの quorum を更新する。
-TargetId は AccountId を指定する<br />
+TargetId は AccountId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | quorum | [int32](#int32) |  | アカウントの権限を行使するために必要な最小の鍵の数。 |
@@ -793,7 +802,8 @@ TargetId は AccountId(PeerId) を指定する。
 <a name="proskenion.Transaction"></a>
 
 ### Transaction
-Transaction は Client が送信する取引の内容を記述したものである<br />
+Transaction は Client が送信する取引の内容を記述したものである。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | payload | [Transaction.Payload](#proskenion.Transaction.Payload) |  |  |
@@ -824,7 +834,8 @@ Transaction は Client が送信する取引の内容を記述したものであ
 
 ### TransferBalance
 Transfer Command は送金を行う。
-targetId は 送金元の AccountId を示す<br />
+targetId は 送金元の AccountId を示す。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | destAccountId | [string](#string) |  | 送金先の AccountId。 |
@@ -839,7 +850,8 @@ targetId は 送金元の AccountId を示す<br />
 
 ### TransferObject
 TransferObject は Storage 内の key で指定された要素内の Object を送信する。（list or dict)
-TargetId は WalletId を指定する<br />
+TargetId は WalletId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  | Storage 内の要素を指定するためのキー値。 |
@@ -855,7 +867,8 @@ TargetId は WalletId を指定する<br />
 
 ### UpdateObject
 UpdateObject は Storage 内の Object を更新する。
-TargetId は WalletId を指定する<br />
+TargetId は WalletId を指定する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  | Storage 内の要素を指定するためのキー値。 |
@@ -1793,7 +1806,8 @@ return ListObeject[left, right) : left == nil: left is 0, right == nil: right is
 <a name="proskenion.Query"></a>
 
 ### Query
-Query は Proskenion 上のデータを取得するためのフォーマットである<br />
+Query は Proskenion 上のデータを取得するためのフォーマットである。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | payload | [Query.Payload](#proskenion.Query.Payload) |  |  |
@@ -1829,7 +1843,8 @@ Query は Proskenion 上のデータを取得するためのフォーマット�
 <a name="proskenion.QueryResponse"></a>
 
 ### QueryResponse
-QueryResponse は Read RPC の返り値である<br />
+QueryResponse は Read RPC の返り値である。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | object | [Object](#proskenion.Object) |  | Query で取得したデータ。 |
@@ -1860,7 +1875,8 @@ QueryResponse は Read RPC の返り値である<br />
 
 ### SyncRequest
 SynRequest は取得したい BlockChain の先頭のブロックハッシュを渡す。
-終了は io.EOF を用いる<br />
+終了は io.EOF を用いる。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | blockHash | [bytes](#bytes) |  |  |
@@ -1875,7 +1891,8 @@ SynRequest は取得したい BlockChain の先頭のブロックハッシュを
 ### SyncResponse
 SyncResponse は Block と Transaction の列を返す。
 データベースのロック解除のために空を返す。
-空を返されたら Request で再び続きから取得する<br />
+空を返されたら Request で再び続きから取得する。
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | block | [Block](#proskenion.Block) |  |  |
@@ -1899,7 +1916,7 @@ SyncGate は 同期を行うための通信
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Sync | [SyncRequest](#proskenion.SyncRequest) stream | [SyncResponse](#proskenion.SyncResponse) stream | Sync は同期したい側が正しいデータを持っている Peer に対して投げるリクエストである<br />InvalidArgument (code = 3) : One of following conditions: 1 ) Block hash is nil. 2 ) Block Verify failed. 3 ) Transaction is nil. 4 ) Transaction Verify failed. DeadlineExceeded (Code = 4) One fo following conditoins: 1 ) Timeout stream response. AlreadyExist (code = 6) : One of following conditions: 1 ) Block is already exist is blockchain. |
+| Sync | [SyncRequest](#proskenion.SyncRequest) stream | [SyncResponse](#proskenion.SyncResponse) stream | Sync は同期したい側が正しいデータを持っている Peer に対して投げるリクエストである。<br />InvalidArgument (code = 3) : One of following conditions: 1 ) Block hash is nil. 2 ) Block Verify failed. 3 ) Transaction is nil. 4 ) Transaction Verify failed. DeadlineExceeded (Code = 4) One fo following conditoins: 1 ) Timeout stream response. AlreadyExist (code = 6) : One of following conditions: 1 ) Block is already exist is blockchain. |
 
  
 
