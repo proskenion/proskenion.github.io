@@ -15,13 +15,16 @@ It is a BlockChain platform that bases between the content provider and the spec
 
   本プロジェクトでは、コンテンツの供給者（以下クリエータとする）のために高い表現力と合意形成アルゴリズムを汎用的に設計できるブロックチェーンを開発した。ブロックチェーン技術では、高い信頼性が求められる金融取引や重要データのやりとり等での利用が期待される技術であるが、その本質は非中央集権的な仕組みにある。ブロックチェーンシステムの最大の魅力は中央集権的な支配から解放されたシステムで人々が中〜大規模な経済を回すことができる点にある。ビットコインでは”通貨”を国家による中央集権的な支配から分散管理のもとにおくことに成功したが、この度のプロジェクトでは”デジタルコンテンツの流通”を法人による中央集権的な支配から分散管理におくことを目標にする。また、ただ分散管理をするのではコンテンツの流通の元締めが法人からマイナーになったに過ぎない。一般的なブロックチェーンではマイナーにあたる存在は大量の計算資源を持っているもの、仮想通貨を大量に保有しているものなどであり、今回実現したいクリエータ主体であるようなものとは異なる。そこでクリエータ自体をマイナーの立場におけるような合意形成とインセンティブの仕組みを設計できるブロックチェーンプラットフォームを開発した。また、配信するコンテンツやエコシステムの状況に応じて合意形成とインセンティブの仕組みを適宜変更する必要がある。これを実現するために、Proskenion ではクリエータ自信のデータやコンテンツのメタデータを扱えるようなプリミティブな命令群と合意形成とインセンティブの仕組みを動的且つ自由且つセキュア且つ簡単に変更できる仕組みを導入した。当然、ブロックチェーンシステムには、システムの一部が故障しても障害の重大性に応じて機能を低下させながらも処理を続行するフォールトトレラント性を持つこと、外部からの侵入攻撃によってデータの 改竄を行うことが困難であることが求められる。これらを解決するために既存のブロックチェーンで採用されている技術も組み込んだ全く新しいブロックチェーンを開発した。このブロックチェーンプラットフォームは「複合型のアセットを管理できる」、「取引が改竄されることがない」、「いつでも利用できる」という要件を満たす。次章以降ではクリエータ主体のブロックチェーンシステム運用基盤プラットフォームの内部メカニズムについて解説する。
 
+# Software Architecture
+ ブロックチェーンに必要な構成を図\ref{arch}のようにマイクロサービスアーキテクチャのようにいくつかの独立した機構に分けて考えた。ベースとしてはゲート、合意形成、同期、レポジトリ、コミットと機構を分解した。ソフトウェアアーキテクチャとしては変更に強いクリーン・アーキテクチャを意識しつつ、ディレクトリ構造的には Ethereum のプロジェクトを参考にした。具体的には core ディレクトリ内に Proskenion で用いる全てのモデルと機構のインタフェースを記述する。クリーン・アーキテクチャにおける Entity にあたるところがここである。クリーン・アーキテクチャの最外部層である external interface として convertor ディレクトリ内に、Protocol-Buffers で定義したモデルとProskenion 上のインタフェースの変換コードを記述している。入力の受け口として controller ディレクトリ内に通信から受け取ったデータをconvertor を用いて内部で扱うインタフェースに変換してその他の機構（usecase）に流す役割を記述している。この形式にすることで内部で実際に扱っているシリアライズデータ形式やデータベース、暗号ライブラリなどの変更が容易となる。外部ツールの変更に強いだけでなく、各機構の内部実装についても同様に、実装方式が変更されても他の機構への影響がでないようにしている。これは継続的な開発、そして後にチーム開発を行ったりOSS としての開発を進めることを想定してこのように変更に強い設計を採用した。Proskenion では開発言語に Go Language を採用した。その理由として、Go が言語仕様としてエラーチェックを強制させる、書き方がほぼ一意に定まる、型がある、並列処理が得意であるといった、セキュアな分散システムの開発に適している点が挙げられる。また OSS として開発するにあたって、誰が見ても分かりやすい言語であるというのも起用した理由である。書きやすさとセキュリティの面からもバランスが取れているので、ブロックチェーンの開発には非常に適していると考えた。Go のパッケージ管理ツールには Glide を用いた。暗号関数にはハッシュ関数に sha256、 署名関数に ed25519 を採用した。これはEthereum で採用されてる暗号方式であるのと、現存する暗号方式の中でも極めて安全な部類であるのに加え各言語でライブラリが実装されていて扱いやすいという3点を理由に適していると考えた。通信プロトコルには GRPC[3]、シリアライズデータ形式には Protocol-Buffers[4] を採用した。高速なP2P通信が可能で且つ型付きのデータ構造を扱え、各言語でライブラリが揃っているという点で、多くのトランザクションを要求されると想定されるブロックチェーンに適していると考えた。また Go Language との相性も良いからである。
+
 # Conventions
 
 本章では、Proskenion 上で使われる用語の定義を行う。まず、Proskenion を構成する上の最小単位であるオブジェクトを定義する。
 
 ## Primitive
 
-　*Primitive* な型 として Protocol-Buffers[3] で定義されている標準型を使用できる。Protocol-Buffers では標準で真偽型, 32bit符号付き整数型, 64bit符号付き整数型, 32bit符号なし整数型, 64bit符号なし整数型, 文字列型, バイト列型, 配列型, 辞書型 がサポートされている。
+　*Primitive* な型 として Protocol-Buffers で定義されている標準型を使用できる。Protocol-Buffers では標準で真偽型, 32bit符号付き整数型, 64bit符号付き整数型, 32bit符号なし整数型, 64bit符号なし整数型, 文字列型, バイト列型, 配列型, 辞書型 がサポートされている。
 
 ## Address
 
@@ -81,7 +84,7 @@ It is a BlockChain platform that bases between the content provider and the spec
 MerkleTree はリストオブジェクトとその部分列のハッシュ値を計算できるデータ構造である。*MerkleTree* は *Push*, *Hash* メソッドを持つ。 *Push* メソッドはハッシュ関数が定義された *Object* をリストの先頭に追加する。*Hash* メソッドはリスト全体のハッシュ値を取得する。 簡易的な実装として*RootHash* としてハッシュ値の総和を持つ実装をしている。累積的にハッシュ値を計算することで *Push*, *Hash* メソッドをそれぞれ *O(1)* で実行できる。ここで ハッシュ値の計算を *O(1)* とする。
 
 ### MerklePatriciaTree
-　*MerklePatriciaTree*[4] は部分木のハッシュ値を計算できる基数木データ構造である。*MerklePatriciaTree* は *Search*, *Find*, *Upsert*, *Set*, *Get*, *Hash* メソッドを持つ。*Serach* メソッドではキー値と 接頭辞が一致している最も浅い内部ノード（部分木）を取得する。*Find* メソッドはキー値で参照した先の葉ノードを取得する。*Upsert* メソッドはキー値とバリュー値が定義されたノードを *MerklePatriciaTree* に追加または更新する。*Set* メソッドはルートハッシュを指定して木のルートを変更する。*Get* メソッドはルートハッシュ指定して内部ノード（部分木）を取得する。*Hash* メソッドでは木のルートハッシュを取得する。*MerklePatriciaTree* ではキー値を基数木の内部ノードとして且つ経路圧縮を行うことで *Search*, *Find*, *Upsert*, をそれぞれ *O(|key|)*, *Set*, *Get*, を *O(1)*, *Hash* を *O(|set of character of key|)* で計算できる。
+　*MerklePatriciaTree*[5] は部分木のハッシュ値を計算できる基数木データ構造である。*MerklePatriciaTree* は *Search*, *Find*, *Upsert*, *Set*, *Get*, *Hash* メソッドを持つ。*Serach* メソッドではキー値と 接頭辞が一致している最も浅い内部ノード（部分木）を取得する。*Find* メソッドはキー値で参照した先の葉ノードを取得する。*Upsert* メソッドはキー値とバリュー値が定義されたノードを *MerklePatriciaTree* に追加または更新する。*Set* メソッドはルートハッシュを指定して木のルートを変更する。*Get* メソッドはルートハッシュ指定して内部ノード（部分木）を取得する。*Hash* メソッドでは木のルートハッシュを取得する。*MerklePatriciaTree* ではキー値を基数木の内部ノードとして且つ経路圧縮を行うことで *Search*, *Find*, *Upsert*, をそれぞれ *O(|key|)*, *Set*, *Get*, を *O(1)*, *Hash* を *O(|set of character of key|)* で計算できる。
 
 ## Repository
 　*Repository* は Proskenion 上でデータを保存する機構ある。データを保存する形式またそのデータ構造について定義する。Proskenion  には3つの *MerklePatriciaTree* が実装されている。ブロックの列の状態を保存する *BlockChain*, 実行された取引の履歴を保存する *TxHistory*, Proskenion 上のオブジェクトを保存する *WSV(World State View)* とそれぞれ定義する。*WSV* では *Address* 型の *id* によって指定された場所に *Account*, *Peer* または *Storage* を保存している。また一時的に保存されるデータ機構として、*Block* に内包する *Transaction* のリストを保存する *TxList*, クライアントまた他ピアから受け取った *Transaction* を保存する *TxQueue*, 他ピアから受け取った *Block* を保存する *BlockQueue*, 他ピアから受け取った *TxList* を保存する *TxListCache*, *Peer* の通信経路を保存しておく *ClientCache* が実装されている。
@@ -115,7 +118,7 @@ MerkleTree はリストオブジェクトとその部分列のハッシュ値を
 
 # Proskenion Domain Specific Language
 
-Proskenion Domain Specific Language(以下、ProSL) は Proskenion 上で実行できる DSL である。ProSL は無限ループを避けるためにチューリング完全でない命令セットを用いている。ProSL は Protocol-Buffers で定義されており、内部での DSL の検証、実行もシリアライズされた Protocol-Buffers のデータを用いる。ver 1.0a では YAML[5] によって書かれた ProSL を Protocol-Buffers に変換するコードが実装されている。Proskenion 上では Protocol-Buffers を用いて制御するため、 Procol-Buffers への変換コードさえ実装すれば YAML 以外でも ProSL を記述可能になる。
+Proskenion Domain Specific Language(以下、ProSL) は Proskenion 上で実行できる DSL である。ProSL は無限ループを避けるためにチューリング完全でない命令セットを用いている。ProSL は Protocol-Buffers で定義されており、内部での DSL の検証、実行もシリアライズされた Protocol-Buffers のデータを用いる。ver 1.0a では YAML[6] によって書かれた ProSL を Protocol-Buffers に変換するコードが実装されている。Proskenion 上では Protocol-Buffers を用いて制御するため、 Procol-Buffers への変換コードさえ実装すれば YAML 以外でも ProSL を記述可能になる。
 
 ## Design
 
@@ -366,15 +369,16 @@ Proskenion の Usecase について考える。
 
 # Feature works
 
-　Feature works としては実証実験での利用として Proskenion の特性を活かして実証実験で利用する形を模索している。具体的にはインセンティブと合意形成アルゴリズムを簡単に設計できるため、”どういった報酬設計” が “どのような結果をもたらすか” の実験を中~小規模で行うのに向いている。また、 Proskenion が実運用されるための世界の基盤を創るための新たなブロックチェーン開発も進めたい。最近注目されているブロックチェーン開発ツールキットとして “Substrate[6]” というものがある。これは複数のブロックチェーンを繋げる Project の一環として作られたものであり、Polkadot[7] の Project の一つである。これを用いてスケーラビリティと相互交換性を担保する新たなブロックチェーンの開発を行う。
+　Feature works としては実証実験での利用として Proskenion の特性を活かして実証実験で利用する形を模索している。具体的にはインセンティブと合意形成アルゴリズムを簡単に設計できるため、”どういった報酬設計” が “どのような結果をもたらすか” の実験を中~小規模で行うのに向いている。また、 Proskenion が実運用されるための世界の基盤を創るための新たなブロックチェーン開発も進めたい。最近注目されているブロックチェーン開発ツールキットとして “Substrate[7]” というものがある。これは複数のブロックチェーンを繋げる Project の一環として作られたものであり、Polkadot[8] の Project の一つである。これを用いてスケーラビリティと相互交換性を担保する新たなブロックチェーンの開発を行う。
 
 # Acknowledgement
 ## References
 1. BitCoin [https://bitcoin.org/bitcoin.pdf]
 2. Ethereum [https://ethereum.github.io/yellowpaper/paper.pdf]
-3. Protocol-Buffers [https://developers.google.com/protocol-buffers/]
-4. MerklePatriciaTree [https://github.com/ethereum/wiki/wiki/Patricia-Tree]
-5. YAML [https://yaml.org/spec/history/2001-05-26.html]
-6. Substrate [https://www.parity.io/what-is-substrate/]
-7. Polkadot [https://polkadot.network/]
+3. GRPC [https://grpc.io/]
+4. Protocol-Buffers [https://developers.google.com/protocol-buffers/]
+5. MerklePatriciaTree [https://github.com/ethereum/wiki/wiki/Patricia-Tree]
+6. YAML [https://yaml.org/spec/history/2001-05-26.html]
+7. Substrate [https://www.parity.io/what-is-substrate/]
+8. Polkadot [https://polkadot.network/]
 
