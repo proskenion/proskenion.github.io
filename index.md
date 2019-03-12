@@ -1,7 +1,7 @@
 ---
 layout: default
 title: <div align="center"><img src=https://user-images.githubusercontent.com/6259384/52863883-42ec5100-317c-11e9-89f4-640f7bd26938.png "proskenion"></div>
-description: 　
+description: Proskenion
 ---
 
 ## About Proskenion
