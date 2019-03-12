@@ -839,7 +839,7 @@ InvalidArgument (code = 3) : One of following conditions:
 
       
         <h3 id="proskenion.Account">Account</h3>
-        <pre></pre>
+        <pre>アカウントを表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -852,42 +852,42 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>accountId</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントを特定するユニークなアドレス。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>accountName</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントの表示名。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>publicKeys</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントを操作するための鍵の列。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>quorum</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントを操作するために必要最小限の鍵の数。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>balance</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントの保有する基軸通貨の数。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>delegatePeerId</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>アカウントが信頼しているピアのアドレス。 </pre></td>
                 </tr>
               
             </tbody>
@@ -1010,7 +1010,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Address">Address</h3>
-        <pre></pre>
+        <pre>Proskenion 上のオブジェクトにアクセスするためのオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1188,7 +1188,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Command">Command</h3>
-        <pre>================ Command ================</pre><pre>Proskenion を操作するためのプリミティブな命令。</pre>
+        <pre>Proskenion を操作するためのプリミティブな命令。</pre>
 
         
           <table class="field-table">
@@ -1450,7 +1450,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.MegaBinaryChunk">MegaBinaryChunk</h3>
-        <pre>参考 : https://triple-underscore.github.io/RFC2616-ja.html#section-3.6.1</pre>
+        <pre>未実装。 (参考 : https://triple-underscore.github.io/RFC2616-ja.html#section-3.6.1)</pre>
 
         
           <table class="field-table">
@@ -1487,7 +1487,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.MegaStorage">MegaStorage</h3>
-        <pre></pre>
+        <pre>未実装。</pre>
 
         
           <table class="field-table">
@@ -1507,7 +1507,7 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>megaBinaryHash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><pre>MerkleTree で管理 </pre></td>
+                  <td><pre> </pre></td>
                 </tr>
               
             </tbody>
@@ -1547,7 +1547,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Object">Object</h3>
-        <pre></pre>
+        <pre>Proskenion で扱えるデータ構造をまとめたオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1560,7 +1560,7 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>type</td>
                   <td><a href="#proskenion.ObjectCode">ObjectCode</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>オブジェクトの識別子。 </pre></td>
                 </tr>
               
                 <tr>
@@ -1696,7 +1696,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.ObjectDict">ObjectDict</h3>
-        <pre></pre>
+        <pre>オブジェクトの辞書を表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1709,7 +1709,7 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>dict</td>
                   <td><a href="#proskenion.ObjectDict.DictEntry">ObjectDict.DictEntry</a></td>
                   <td>repeated</td>
-                  <td><pre> </pre></td>
+                  <td><pre>文字列をキー値、オブジェクトをバリュー値に持つ辞書。 </pre></td>
                 </tr>
               
             </tbody>
@@ -1749,7 +1749,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.ObjectList">ObjectList</h3>
-        <pre></pre>
+        <pre>オブジェクトのリストを表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1762,7 +1762,7 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>list</td>
                   <td><a href="#proskenion.Object">Object</a></td>
                   <td>repeated</td>
-                  <td><pre> </pre></td>
+                  <td><pre>オブジェクトの列。 </pre></td>
                 </tr>
               
             </tbody>
@@ -1772,7 +1772,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.OrderBy">OrderBy</h3>
-        <pre></pre>
+        <pre>ソートのキーと順序の識別オブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1802,7 +1802,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Peer">Peer</h3>
-        <pre></pre>
+        <pre>ピアを表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1815,35 +1815,35 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>peerId</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ピアを特定するユニークなアドレス。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>address</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ピアにアクセスするためのグローバルアドレス。(ex. ip:port) </pre></td>
                 </tr>
               
                 <tr>
                   <td>publicKey</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ピアの公開鍵。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>active</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ピアが同期して活動しているかの真偽値。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>ban</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ピアがチェーン上から排斥されているかの真偽値。 </pre></td>
                 </tr>
               
             </tbody>
@@ -1899,7 +1899,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Signature">Signature</h3>
-        <pre></pre>
+        <pre>署名を表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1912,14 +1912,14 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>publicKey</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>公開鍵を base64 エンコードしたもの。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>signature</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>秘密鍵でハッシュ値を署名したもの。 </pre></td>
                 </tr>
               
             </tbody>
@@ -1929,7 +1929,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.Storage">Storage</h3>
-        <pre></pre>
+        <pre>ストレージを表すオブジェクト。</pre>
 
         
           <table class="field-table">
@@ -1942,14 +1942,14 @@ InvalidArgument (code = 3) : One of following conditions:
                   <td>id</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><pre> </pre></td>
+                  <td><pre>ストレージを特定するユニークなアドレス。 </pre></td>
                 </tr>
               
                 <tr>
                   <td>object</td>
                   <td><a href="#proskenion.Storage.ObjectEntry">Storage.ObjectEntry</a></td>
                   <td>repeated</td>
-                  <td><pre> </pre></td>
+                  <td><pre>ストレージの中身を表すキーバリューデータ構造。 </pre></td>
                 </tr>
               
             </tbody>
@@ -2155,7 +2155,7 @@ InvalidArgument (code = 3) : One of following conditions:
 
       
         <h3 id="proskenion.ObjectCode">ObjectCode</h3>
-        <pre></pre>
+        <pre>Object の識別コード。</pre>
         <table class="enum-table">
           <thead>
             <tr><td>Name</td><td>Number</td><td>Description</td></tr>
@@ -2280,7 +2280,7 @@ InvalidArgument (code = 3) : One of following conditions:
         </table>
       
         <h3 id="proskenion.OrderCode">OrderCode</h3>
-        <pre></pre>
+        <pre>順序の識別コード。DESC(降順), ASC(昇順)。</pre>
         <table class="enum-table">
           <thead>
             <tr><td>Name</td><td>Number</td><td>Description</td></tr>
@@ -2497,7 +2497,7 @@ InvalidArgument (code = 3) : One of following conditions:
         
       
         <h3 id="proskenion.ConditionalFormula">ConditionalFormula</h3>
-        <pre>=== CodntionalFormula ====</pre>
+        <pre></pre>
 
         
           <table class="field-table">
@@ -3324,7 +3324,7 @@ Output : ObjectList&lt;StorageObject&gt;
         
       
         <h3 id="proskenion.ProslOperator">ProslOperator</h3>
-        <pre>=== ProslOperator ====</pre>
+        <pre></pre>
 
         
           <table class="field-table">
@@ -3671,7 +3671,7 @@ Output : ObjectList&lt;StorageObject&gt;
         
       
         <h3 id="proskenion.ValueOperator">ValueOperator</h3>
-        <pre>=== ValueOperator ===</pre>
+        <pre></pre>
 
         
           <table class="field-table">
