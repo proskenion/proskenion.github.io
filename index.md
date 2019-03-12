@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Proskenion
+description: Top Page.
 ---
 
 ## About Proskenion
